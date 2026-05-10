@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>母亲节快乐 | 爱的电子贺卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 避免拖动文字，提升卡片感，但不影响复制祝福 */
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #ffdde1 0%, #f9c9e2 40%, #ffb7c5 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Noto Sans CJK SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            cursor: pointer;
+        }
+
+        /* 飘落花瓣容器 */
+        .petals-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .petal {
+            position: absolute;
+            color: #ffb3c6;
+            font-size: 24px;
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 10;
+            animation: floatFall linear infinite;
+            text-shadow: 0 0 2px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes floatFall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 主卡片玻璃效果 */
+        .card {
+            background: rgba(255, 248, 245, 0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 68px 68px 80px 80px;
+            box-shadow: 0 35px 60px rgba(255, 105, 180, 0.3), 0 15px 25px rgba(0, 0, 0, 0.1), inset 0 1px 2px rgba(255,255,255,0.8);
+            max-width: 560px;
+            width: 100%;
+            padding: 30px 28px 45px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            z-index: 20;
+            position: relative;
+            border: 1px solid rgba(255, 210, 220, 0.6);
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 40px 70px rgba(255, 80, 140, 0.4);
+        }
+
+        /* 装饰小花边 */
+        .card::before {
+            content: "✿ ✿ ✿";
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            color: #ff8aa4;
+            letter-spacing: 12px;
+            text-shadow: 0 2px 5px rgba(255,255,200,0.8);
+            background: rgba(255,240,235,0.7);
+            padding: 0 20px;
+            border-radius: 80px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 妈妈头像区（可爱插图风格） */
+        .mom-avatar {
+            margin: 15px 0 5px 0;
+            position: relative;
+        }
+
+        .avatar-circle {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg, #ffe6f0, #ffccdd);
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 20px rgba(247, 120, 160, 0.25);
+            border: 3px solid #ffffffdd;
+            transition: 0.2s;
+        }
+
+        .avatar-circle span {
+            font-size: 72px;
+            filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.1));
+        }
+
+        .mom-title {
+            font-size: 18px;
+            color: #c26e85;
+            margin-top: 10px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            background: #fff0f0aa;
+            display: inline-block;
+            padding: 4px 18px;
+            border-radius: 40px;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 主标题 */
+        .greeting {
+            font-size: 2.8rem;
+            font-weight: 800;
+            background: linear-gradient(125deg, #e8457a, #ff9460);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 20px 0 12px 0;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 6px rgba(255,120,140,0.2);
+        }
+
+        /* 祝福语区域 */
+        .message {
+            font-size: 1.2rem;
+            line-height: 1.65;
+            color: #4b2c38;
+            background: rgba(255, 245, 240, 0.7);
+            padding: 18px 18px;
+            border-radius: 48px;
+            margin: 15px 0 20px;
+            font-weight: 500;
+            backdrop-filter: blur(2px);
+            border: 1px solid #ffcdd5;
+        }
+
+        .poem {
+            font-style: italic;
+            font-size: 1rem;
+            color: #a55b6e;
+            border-left: 4px solid #ff9eb5;
+            padding-left: 15px;
+            margin-top: 11px;
+            text-align: left;
+            font-weight: 400;
+        }
+
+        /* 互动爱心按钮 */
+        .love-btn {
+            background: #ff859f;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 12px 32px;
+            border-radius: 60px;
+            box-shadow: 0 5px 0 #ac4c6a;
+            cursor: pointer;
+            transition: 0.1s linear;
+            margin: 20px 0 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(4px);
+            font-family: inherit;
+        }
+
+        .love-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #ac4c6a;
+        }
+
+        /* 小落款 */
+        .signature {
+            font-size: 1rem;
+            color: #b3587a;
+            margin-top: 15px;
+            border-top: 1px dashed #ffbfcf;
+            padding-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .sign-name {
+            font-weight: 700;
+            background: #fff4f0;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+        }
+
+        .date {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        /* 心动累计区域 */
+        .heart-counter {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #cf7c97;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* 点击产生的爱心雨滴 */
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            font-size: 28px;
+            font-weight: normal;
+            z-index: 999;
+            animation: heartFloat 1.2s ease-out forwards;
+            filter: drop-shadow(0 0 4px #ff4d6d);
+        }
+
+        @keyframes heartFloat {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-150px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 550px) {
+            .card {
+                padding: 20px 18px 35px;
+                border-radius: 52px;
+            }
+            .greeting {
+                font-size: 2.2rem;
+            }
+            .message {
+                font-size: 1rem;
+                padding: 14px;
+            }
+            .love-btn {
+                padding: 10px 28px;
+                font-size: 1rem;
+            }
+            .avatar-circle {
+                width: 90px;
+                height: 90px;
+            }
+            .avatar-circle span {
+                font-size: 58px;
+            }
+        }
+
+        /* 自定义爱心点点 */
+        .cute-stars {
+            font-size: 16px;
+            letter-spacing: 8px;
+            margin-top: 10px;
+            color: #ff88aa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="petals-container" id="petalContainer"></div>
+
+<div class="card" id="mainCard">
+    <div class="mom-avatar">
+        <div class="avatar-circle">
+            <span>🌸👩🏻🌸</span>
+        </div>
+        <div class="mom-title">✨ 我最亲爱的妈咪 ✨</div>
+    </div>
+
+    <div class="greeting">
+        🌷 母亲节快乐 🌷
+    </div>
+
+    <div class="message">
+        💖 亲爱的妈妈，您是我生命里最温暖的港湾 💖<br>
+        感谢您的碎碎念念，温暖了我的岁岁年年。<br>
+        愿时光慢一点，爱您多一点 🌹<br>
+        <div class="poem">
+            “ 宇宙洪荒，生命浩瀚，<br>
+            但只有您和我，真正分享过心跳。 ”
+        </div>
+    </div>
+
+    <button class="love-btn" id="sendLoveBtn">
+        💗 给妈妈一个拥抱 💗
+    </button>
+
+    <div class="cute-stars">
+        ✧  ✤  ✧  ✤  ✧
+    </div>
+
+    <div class="signature">
+        <span class="sign-name">🌿 永远爱您的孩子</span>
+        <span class="date">📅 母亲节 · 爱您每一天</span>
+    </div>
+    <div class="heart-counter" id="heartCountBox">
+        <span>❤️</span> 传递了 <span id="loveCount">0</span> 次拥抱有爱
+    </div>
+    <div style="font-size: 12px; margin-top: 12px; opacity: 0.6;">
+        💝 点击任意地方 ｜ 洒落爱心花瓣 💝
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---- 飘落花瓣系统 ----
+        const petalContainer = document.getElementById('petalContainer');
+        const petalsSymbols = ['🌸', '🌼', '🌸', '🌸', '🌺', '🌷', '🌸', '🌸', '🌼', '🌸', '💗', '🌸'];
+        
+        // 生成花瓣数量，根据不同屏幕宽度微调，依然华丽
+        function createPetals() {
+            const petalCount = window.innerWidth < 600 ? 24 : 36;
+            for (let i = 0; i < petalCount; i++) {
+                const petal = document.createElement('div');
+                petal.classList.add('petal');
+                // 随机选取花瓣图标
+                const randomIndex = Math.floor(Math.random() * petalsSymbols.length);
+                petal.textContent = petalsSymbols[randomIndex];
+                // 随机大小
+                const size = Math.floor(Math.random() * 18 + 16); // 16px - 34px
+                petal.style.fontSize = size + 'px';
+                petal.style.left = Math.random() * 100 + '%';
+                // 随机动画时间 4s ~ 12s之间，让飘落错落有致
+                const duration = Math.random() * 9 + 5;
+                petal.style.animationDuration = duration + 's';
+                // 随机延迟 0s - 7s
+                const delay = Math.random() * 7;
+                petal.style.animationDelay = delay + 's';
+                petal.style.opacity = Math.random() * 0.5 + 0.3;
+                petalContainer.appendChild(petal);
+            }
+        }
+
+        createPetals();
+        // 为了让飘落持续，动态补充一点花瓣 (每10秒添加几个新的，制造持续浪漫)
+        setInterval(() => {
+            if (petalContainer.children.length < 50) {
+                for (let i = 0; i < 3; i++) {
+                    const petal = document.createElement('div');
+                    petal.classList.add('petal');
+                    petal.textContent = petalsSymbols[Math.floor(Math.random() * petalsSymbols.length)];
+                    const size = Math.floor(Math.random() * 20 + 15);
+                    petal.style.fontSize = size + 'px';
+                    petal.style.left = Math.random() * 100 + '%';
+                    const duration = Math.random() * 9 + 5;
+                    petal.style.animationDuration = duration + 's';
+                    petal.style.animationDelay = '0s';
+                    petal.style.opacity = Math.random() * 0.6 + 0.2;
+                    petalContainer.appendChild(petal);
+                    // 动画结束后移除自己 避免过多垃圾
+                    petal.addEventListener('animationend', function() {
+                        if (petal.parentNode) petal.remove();
+                    });
+                }
+            }
+        }, 8000);
+
+        // 现有的花瓣也在动画结束后移除，内存优化
+        const existingPetals = document.querySelectorAll('.petal');
+        existingPetals.forEach(petal => {
+            petal.addEventListener('animationend', function() {
+                if (this.parentNode) this.remove();
+            });
+        });
+
+        // ---------- 爱心计数器 & 点击产生爱心特效 ----------
+        let loveClickCount = 0;
+        const loveCountSpan = document.getElementById('loveCount');
+        const sendBtn = document.getElementById('sendLoveBtn');
+        const mainCard = document.getElementById('mainCard');
+
+        // 产生漂浮爱心函数 (x, y 鼠标/点击位置，或者随机围绕卡片位置)
+        function createFloatingHeart(x, y) {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            const heartSymbols = ['❤️', '💖', '💗', '🌸', '🌹', '💝', '🌷', '🌸', '❤️', '💕'];
+            const rand = Math.floor(Math.random() * heartSymbols.length);
+            heart.textContent = heartSymbols[rand];
+            // 随机大小
+            const size = Math.floor(Math.random() * 28 + 22);
+            heart.style.fontSize = size + 'px';
+            heart.style.left = (x - 20) + 'px';
+            heart.style.top = (y - 20) + 'px';
+            document.body.appendChild(heart);
+            setTimeout(() => {
+                if (heart.parentNode) heart.remove();
+            }, 1200);
+        }
+
+        // 从卡片或者按钮中心扩散
+        function burstHeartsFromElement(element, count = 6) {
+            const rect = element.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            for (let i = 0; i < count; i++) {
+                // 随机偏移，让爱心散布范围大一点
+                const offsetX = (Math.random() - 0.5) * 70;
+                const offsetY = (Math.random() - 0.5) * 50;
+                setTimeout(() => {
+                    createFloatingHeart(centerX + offsetX, centerY + offsetY);
+                }, i * 50);
+            }
+        }
+
+        // 更新计数显示
+        function updateLoveCount() {
+            loveCountSpan.innerText = loveClickCount;
+        }
+
+        // 增加拥抱数，并且播放“心形特效”
+        function addLove(originElement, isButtonClick = true) {
+            loveClickCount++;
+            updateLoveCount();
+            // 根据触发源产生爱心雨效果
+            if (originElement) {
+                burstHeartsFromElement(originElement, 8);
+            } else {
+                // 安全后备从卡片中心
+                burstHeartsFromElement(mainCard, 8);
+            }
+            // 额外视觉反馈：卡片轻微跳跃
+            mainCard.style.transform = 'scale(1.01)';
+            setTimeout(() => {
+                mainCard.style.transform = '';
+            }, 150);
+            // 如果是由按钮触发，展示一个小提示（不干扰体验）
+            if (isButtonClick && loveClickCount % 5 === 0) {
+                const tempTip = document.createElement('div');
+                tempTip.textContent = '💐 妈妈收到你的爱啦 💐';
+                tempTip.style.position = 'fixed';
+                tempTip.style.bottom = '20px';
+                tempTip.style.left = '50%';
+                tempTip.style.transform = 'translateX(-50%)';
+                tempTip.style.backgroundColor = '#ffecf0';
+                tempTip.style.color = '#c2486a';
+                tempTip.style.padding = '8px 18px';
+                tempTip.style.borderRadius = '40px';
+                tempTip.style.fontSize = '0.9rem';
+                tempTip.style.fontWeight = 'bold';
+                tempTip.style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+                tempTip.style.zIndex = '1000';
+                tempTip.style.backdropFilter = 'blur(4px)';
+                tempTip.style.border = '1px solid #ffb7c0';
+                document.body.appendChild(tempTip);
+                setTimeout(() => {
+                    if (tempTip) tempTip.remove();
+                }, 1800);
+            }
+        }
+
+        // 全局点击卡片区域都产生爱心（也包括内容区，温暖传递）
+        // 为了防止重复监听，对整个卡片和按钮分别处理
+        sendBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            addLove(sendBtn, true);
+        });
+
+        // 点击卡片主要区域（除了按钮再次触发也可，但为了体验，任意地方都可传递拥抱）
+        mainCard.addEventListener('click', (e) => {
+            // 避免按钮事件重复导致双倍计数（stopPropagation在按钮已经阻止冒泡）
+            // 但也要排除如果点击的是按钮本身，按钮已单独处理，这里不做二次增加计数
+            if (e.target === sendBtn || sendBtn.contains(e.target)) {
+                return;
+            }
+            addLove(mainCard, false);
+        });
+
+        // 额外支持触摸设备友好，防止双击缩放干扰，但不影响计数
+        let lastTouch = 0;
+        document.body.addEventListener('touchstart', (e) => {
+            // 触摸时，如果点在卡片区域就加爱, 防止过度灵敏限制300ms内一次？
+            let now = Date.now();
+            if (now - lastTouch < 220) return;  // 避免过于密集的触碰导致过多爱心计数，但也可以增加优雅感觉
+            lastTouch = now;
+            // 检测点击目标是否在卡片内且不是按钮，或者允许全区域
+            const target = e.target;
+            if (mainCard.contains(target)) {
+                if (!sendBtn.contains(target)) {
+                    addLove(mainCard, false);
+                } else {
+                    // 按钮自己会触发，这里不加额外
+                }
+            }
+        });
+
+        // 鼠标移动时不用处理，只在点击触发，保留移动端精致效果
+
+        // 初始化加载完成后显示个欢迎爱心小动画（给妈妈惊喜绽放）
+        window.addEventListener('load', () => {
+            // 开场瞬间飘落更多爱心庆祝
+            for (let i = 0; i < 12; i++) {
+                setTimeout(() => {
+                    const randX = Math.random() * window.innerWidth;
+                    const randY = Math.random() * window.innerHeight * 0.5 + 50;
+                    createFloatingHeart(randX, randY);
+                }, i * 80);
+            }
+            // 预祝卡片美好
+            setTimeout(() => {
+                const tip = document.createElement('div');
+                tip.textContent = '✨ 妈妈，母亲节快乐 ✨';
+                tip.style.position = 'fixed';
+                tip.style.top = '30%';
+                tip.style.left = '50%';
+                tip.style.transform = 'translate(-50%, -50%)';
+                tip.style.backgroundColor = '#ffebf0cc';
+                tip.style.backdropFilter = 'blur(12px)';
+                tip.style.color = '#e65780';
+                tip.style.padding = '10px 22px';
+                tip.style.borderRadius = '60px';
+                tip.style.fontWeight = 'bold';
+                tip.style.fontSize = '1.2rem';
+                tip.style.border = '1px solid white';
+                tip.style.zIndex = '999';
+                tip.style.whiteSpace = 'nowrap';
+                tip.style.boxShadow = '0 10px 20px rgba(0,0,0,0.1)';
+                document.body.appendChild(tip);
+                setTimeout(() => tip.remove(), 2500);
+            }, 400);
+        });
+
+        // 增加一个小功能：后台生成一份可保存的祝福，不用复杂，让妈妈开心复制祝福语也不错
+        // 其实贺卡内置了祝福信息，为了方便，也可右击保存但不管, 加一个隐藏控制台友好提示
+        console.log("%c🌷 母亲节电子贺卡 🌷 点击任意处传递爱心，为妈妈收集祝福 💖", "color: #ff6f91; font-size: 16px;");
+        
+        // 避免计数为零总是归零，无伤大雅。另外增加一种特殊双击效果? 不加过于复杂。
+        
+        // 为了满足电子贺卡的“链接感”，这个HTML文件单独打开就是一个完整贺卡，可以发送文件或者部署webview。
+        // 为了符合“链接形式”，用户保存为 .html 然后在微信/QQ里点开，就是贺卡链接效果；如果有web服务器可以上传后分享链接。
+        // 这里增添了纯真动人的交互和花瓣视觉。
+        // 额外处理移动端触摸冒泡
+        document.body.addEventListener('touchmove', (e) => {
+            // 只是为了避免滚动时触发过多，可不做其他
+        }, { passive: true });
+    })();
+</script>
+</body>
+</html>
